@@ -1,9 +1,3 @@
-//
-//  SceneDelegate.swift
-//  PlacesApp
-//
-//  Created by Emre Sahin on 7.01.2023.
-//
 
 import UIKit
 
