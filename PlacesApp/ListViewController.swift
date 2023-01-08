@@ -8,6 +8,8 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var nameArray = [String]()
     var idArray = [UUID]()
+    var chosenPlaceName = ""
+    var chosenPlaceId: UUID?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,7 +22,13 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         takeData()
     }
     
-    func takeData(){
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(takeData), name: NSNotification.Name("YeniYerOlusturuldu"), object: nil)
+    }
+    
+    
+    
+    @objc func takeData(){
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.persistentContainer.viewContext
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Place")
@@ -49,6 +57,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     //It segues to the maps view controller
     @objc func addButton(){
+        chosenPlaceName = ""
         performSegue(withIdentifier: "toMapsVC", sender: nil)
     }
     
@@ -64,5 +73,21 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         return cell
     }
     
-
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        chosenPlaceName = nameArray[indexPath.row]
+        chosenPlaceId = idArray[indexPath.row]
+        performSegue(withIdentifier: "toMapsVC", sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toMapsVC"{
+            let destinationVC =  segue.destination as! MapsViewController
+            destinationVC.chosenName = chosenPlaceName
+            destinationVC.chosenId = chosenPlaceId
+        }
+    }
+    
+    
+    
 }
